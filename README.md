@@ -1,45 +1,112 @@
-Overview
-========
+# Projeto Arquitetura Local DW
 
-Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
+Projeto de Engenharia de Dados desenvolvido para estudar e aplicar uma arquitetura de Data Warehouse local utilizando Docker, Apache Airflow, PostgreSQL, dbt e uma API REST.
 
-Project Contents
-================
+## Arquitetura
 
-Your Astro project contains the following files and folders:
+```text
+API REST
+   ↓
+Apache Airflow
+   ↓
+PostgreSQL
+   ↓
+dbt
+   ↓
+Bronze → Silver → Gold
+```
 
-- dags: This folder contains the Python files for your Airflow DAGs. By default, this directory includes one example DAG:
-    - `example_astronauts`: This DAG shows a simple ETL pipeline example that queries the list of astronauts currently in space from the Open Notify API and prints a statement for each astronaut. The DAG uses the TaskFlow API to define tasks in Python, and dynamic task mapping to dynamically print a statement for each astronaut. For more on how this DAG works, see our [Getting started tutorial](https://www.astronomer.io/docs/learn/get-started-with-airflow).
-- Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
-- include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
-- packages.txt: Install OS-level packages needed for your project by adding them to this file. It is empty by default.
-- requirements.txt: Install Python packages needed for your project by adding them to this file. It is empty by default.
-- plugins: Add custom or community plugins for your project to this file. It is empty by default.
-- airflow_settings.yaml: Use this local-only file to specify Airflow Connections, Variables, and Pools instead of entering them in the Airflow UI as you develop DAGs in this project.
+## Tecnologias
 
-Deploy Your Project Locally
-===========================
+- Python
+- FastAPI
+- Apache Airflow
+- PostgreSQL
+- dbt
+- Docker
+- Git / GitHub
 
-Start Airflow on your local machine by running 'astro dev start'.
+## Pipeline
 
-This command will spin up five Docker containers on your machine, each for a different Airflow component:
+### 1. Extração
 
-- Postgres: Airflow's Metadata Database
-- Scheduler: The Airflow component responsible for monitoring and triggering tasks
-- DAG Processor: The Airflow component responsible for parsing DAGs
-- API Server: The Airflow component responsible for serving the Airflow UI and API
-- Triggerer: The Airflow component responsible for triggering deferred tasks
+A DAG `clientes_pipeline` é responsável por:
 
-When all five containers are ready the command will open the browser to the Airflow UI at http://localhost:8080/. You should also be able to access your Postgres Database at 'localhost:5432/postgres' with username 'postgres' and password 'postgres'.
+- Consumir dados da API REST
+- Validar a resposta
+- Conectar ao PostgreSQL
+- Carregar os dados na tabela de origem
+- Utilizar overwrite para a carga de clientes
 
-Note: If you already have either of the above ports allocated, you can either [stop your existing Docker containers or change the port](https://www.astronomer.io/docs/astro/cli/troubleshoot-locally#ports-are-not-available-for-my-local-airflow-webserver).
+### 2. Transformação
 
-Deploy Your Project to Astronomer
-=================================
+O dbt organiza as transformações em três camadas:
 
-If you have an Astronomer account, pushing code to a Deployment on Astronomer is simple. For deploying instructions, refer to Astronomer documentation: https://www.astronomer.io/docs/astro/deploy-code/
+**Bronze**
+- `stg_clientes`
 
-Contact
-=======
+**Silver**
+- `dim_clientes`
 
-The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.
+**Gold**
+- `clientes_ativos`
+- `resumo_clientes`
+
+### 3. Qualidade
+
+O dbt executa testes de qualidade dos dados, incluindo:
+
+- `not_null`
+- `unique`
+
+## Estrutura do projeto
+
+```text
+projeto_arquitetura_dw/
+│
+├── api/
+│   ├── app.py
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── dags/
+│   ├── clientes_pipeline.py
+│   └── .airflowignore
+│
+├── dbt/
+│   └── projeto_dw/
+│       ├── models/
+│       │   ├── bronze/
+│       │   ├── silver/
+│       │   └── gold/
+│       ├── dbt_project.yml
+│       └── profiles.yml
+│
+├── docker-compose.dw.yml
+├── docker-compose.override.yml
+├── Dockerfile
+└── requirements.txt
+```
+
+## Objetivo
+
+O objetivo deste projeto é construir uma arquitetura de dados completa em ambiente local, aplicando conceitos de:
+
+- ingestão de dados
+- orquestração
+- Data Warehouse
+- transformação com dbt
+- modelagem dimensional
+- testes de qualidade
+- containerização
+- versionamento com Git
+
+## Próximas etapas
+
+- [ ] Pipeline incremental de vendas
+- [ ] Modelagem de fatos e dimensões
+- [ ] Modelos incrementais com dbt
+- [ ] Mais testes de qualidade
+- [ ] CI/CD
+- [ ] Migração da arquitetura para cloud
+- [ ] Implementação na GCP
