@@ -1,8 +1,12 @@
-\# Projeto dbt - Projeto Arquitetura Local DW
+\# Projeto dbt - Arquitetura Local DW
 
 
 
-Este projeto dbt faz parte da arquitetura de Data Warehouse local desenvolvida com Docker, Apache Airflow e PostgreSQL.
+Este projeto dbt faz parte de uma arquitetura de Data Warehouse desenvolvida em ambiente local utilizando Docker, Apache Airflow e PostgreSQL.
+
+
+
+O dbt é responsável pela transformação, organização e validação dos dados dentro do Data Warehouse.
 
 
 
@@ -10,27 +14,25 @@ Este projeto dbt faz parte da arquitetura de Data Warehouse local desenvolvida c
 
 
 
-```text
-
-PostgreSQL
-
-&#x20;   ↓
-
-Bronze
-
-&#x20;   ↓
-
-Silver
-
-&#x20;   ↓
-
-Gold
-
-```
+O fluxo de transformação dos dados segue as seguintes camadas:
 
 
 
-\## Camadas
+\*\*PostgreSQL → Bronze → Silver → Gold\*\*
+
+
+
+\- \*\*PostgreSQL:\*\* fonte dos dados
+
+\- \*\*Bronze:\*\* preparação inicial dos dados
+
+\- \*\*Silver:\*\* padronização e transformação
+
+\- \*\*Gold:\*\* dados preparados para análise
+
+
+
+\## Modelos
 
 
 
@@ -38,11 +40,27 @@ Gold
 
 
 
-Responsável pela preparação inicial dos dados provenientes das fontes.
+Camada responsável pela preparação inicial dos dados provenientes da origem.
 
 
 
-\- `stg\_clientes`
+\*\*Modelo:\*\*
+
+
+
+`stg\_clientes`
+
+
+
+Responsabilidades:
+
+
+
+\- Leitura dos dados da tabela de origem
+
+\- Organização dos campos
+
+\- Disponibilização dos dados para as próximas camadas
 
 
 
@@ -50,11 +68,27 @@ Responsável pela preparação inicial dos dados provenientes das fontes.
 
 
 
-Responsável pela transformação e padronização dos dados.
+Camada responsável pela transformação e padronização dos dados.
 
 
 
-\- `dim\_clientes`
+\*\*Modelo:\*\*
+
+
+
+`dim\_clientes`
+
+
+
+Transformações realizadas:
+
+
+
+\- Remoção de espaços desnecessários
+
+\- Padronização do estado para letras maiúsculas
+
+\- Organização da dimensão de clientes
 
 
 
@@ -62,21 +96,47 @@ Responsável pela transformação e padronização dos dados.
 
 
 
-Camada destinada aos dados prontos para consumo analítico.
+Camada destinada aos dados preparados para consumo analítico.
 
 
 
-\- `clientes\_ativos`
-
-\- `resumo\_clientes`
+\*\*Modelos:\*\*
 
 
 
-\## Testes
+`clientes\_ativos`
 
 
 
-O projeto possui testes de qualidade utilizando:
+`resumo\_clientes`
+
+
+
+O modelo `clientes\_ativos` disponibiliza os clientes atualmente ativos.
+
+
+
+O modelo `resumo\_clientes` apresenta um resumo com:
+
+
+
+\- Total de clientes
+
+\- Clientes ativos
+
+\- Clientes inativos
+
+
+
+\## Qualidade dos dados
+
+
+
+O projeto possui testes de qualidade utilizando recursos nativos do dbt.
+
+
+
+Testes implementados:
 
 
 
@@ -86,19 +146,31 @@ O projeto possui testes de qualidade utilizando:
 
 
 
-Execução:
+Os testes verificam principalmente:
+
+
+
+\- Campos obrigatórios
+
+\- Unicidade do identificador do cliente
+
+\- Integridade dos dados transformados
+
+
+
+\## Execução
+
+
+
+Para verificar a configuração do projeto:
 
 
 
 ```bash
 
-dbt test
+dbt debug
 
 ```
-
-
-
-\## Execução
 
 
 
@@ -126,7 +198,7 @@ dbt test
 
 
 
-Para executar modelos e testes:
+Para executar modelos e testes em sequência:
 
 
 
@@ -171,4 +243,26 @@ models/
 &#x20;   └── schema.yml
 
 ```
+
+
+
+\## Ambiente
+
+
+
+O dbt é executado dentro do ambiente Docker utilizado pelo projeto.
+
+
+
+Tecnologias utilizadas:
+
+
+
+\- dbt Core
+
+\- PostgreSQL
+
+\- Docker
+
+\- Apache Airflow
 
