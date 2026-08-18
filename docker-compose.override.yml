@@ -1,0 +1,31 @@
+services:
+  postgres_dw:
+    image: postgres:16
+    container_name: projeto_dw_postgres
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    environment:
+      POSTGRES_DB: dw
+      POSTGRES_USER: dw_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - postgres_dw_data:/var/lib/postgresql/data
+
+    networks:
+      - airflow
+
+  scheduler:
+    env_file:
+      - .env
+    volumes:
+      - ./dbt:/usr/local/airflow/dbt
+
+volumes:
+  postgres_dw_data:

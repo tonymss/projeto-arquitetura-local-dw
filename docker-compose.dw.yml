@@ -1,0 +1,32 @@
+services:
+
+  postgres_dw:
+    image: postgres:16
+    container_name: projeto_dw_postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: dw
+      POSTGRES_USER: dw_user
+      POSTGRES_PASSWORD: dw_password
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - postgres_dw_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: projeto_dw_api
+    restart: unless-stopped
+
+    ports:
+      - "8000:8000"
+
+volumes:
+
+  postgres_dw_data:
+  

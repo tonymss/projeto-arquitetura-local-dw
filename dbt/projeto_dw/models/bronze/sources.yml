@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: postgres_dw
+    database: dw
+    schema: public
+
+    tables:
+      - name: origem_clientes

@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: dim_clientes
+    description: "Dimensão de clientes"
+
+    columns:
+      - name: id_cliente
+        description: "Identificador único do cliente"
+        data_tests:
+          - not_null
+          - unique
+
+      - name: nome_cliente
+        description: "Nome do cliente"
+        data_tests:
+          - not_null
+
+      - name: ativo
+        description: "Indica se o cliente está ativo"
+        data_tests:
+          - not_null

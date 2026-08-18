@@ -1,0 +1,23 @@
+version: 2
+
+models:
+
+  - name: resumo_clientes
+    description: "Resumo consolidado dos clientes"
+
+    columns:
+
+      - name: total_clientes
+        description: "Quantidade total de clientes"
+        data_tests:
+          - not_null
+
+      - name: clientes_ativos
+        description: "Quantidade de clientes ativos"
+        data_tests:
+          - not_null
+
+      - name: clientes_inativos
+        description: "Quantidade de clientes inativos"
+        data_tests:
+          - not_null
